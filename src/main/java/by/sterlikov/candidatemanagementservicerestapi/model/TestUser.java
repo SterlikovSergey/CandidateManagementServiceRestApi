@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,9 @@ public class TestUser {
     @JoinColumn(name = "test_id")
     private Test test;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ownerResult")
-    private List<TestResult> results = new ArrayList<>();
+    private LocalDate testedAt;
+    private int grade;
+
+
 
 }
