@@ -9,10 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "by_user")
+@Table(name = "candidate")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,9 +27,26 @@ public class User implements UserDetails {
     private String username;
     private String password;
 
+    @Lob
+    private byte[] avatar;
+
+    @Lob
+    private byte[] CVFile;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    @ManyToMany
+    @JoinTable(
+            name = "candidate_direction",
+            joinColumns = @JoinColumn(name = "candidate_id"),
+            inverseJoinColumns = @JoinColumn(name = "direction_id")
+    )
+    private Set<Direction> directions = new HashSet<>();
+
+    @OneToMany(mappedBy = "ownerTest")
+    private Set<TestUser> tests = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
