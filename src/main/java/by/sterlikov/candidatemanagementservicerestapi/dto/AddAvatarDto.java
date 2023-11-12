@@ -9,6 +9,5 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @ToString
 public class AddAvatarDto {
-    private String username;
     private MultipartFile avatar;
 }

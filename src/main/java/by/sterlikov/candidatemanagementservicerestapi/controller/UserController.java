@@ -47,15 +47,18 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{id}/avatar")
-    public ResponseEntity<String> updateAvatar(@PathVariable Long id,
-                                               @RequestBody MultipartFile avatar) throws IOException {
-        Optional<User> optionalUser = userService.findById(id);
+    @PostMapping("/avatar")
+    public ResponseEntity<User> updateAvatar(@RequestPart ("user") User user, @RequestPart ("avatar")
+    MultipartFile avatar) throws IOException {
+        AddAvatarDto addAvatarDto = new AddAvatarDto();
+        addAvatarDto.setAvatar(avatar);
+        User addAvatarDtoToUser = avatarMapper.addAvatarDtoToUser(addAvatarDto);
+        Optional<User> optionalUser = userService.findById(user.getId());
         if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setAvatar(avatar.getBytes());
-            userService.updateUser(user);
-            return ResponseEntity.ok("Avatar updated successfully");
+            User currentUser = optionalUser.get();
+            currentUser.setAvatar(addAvatarDtoToUser.getAvatar());
+            User updateUser = userService.updateUser(currentUser);
+            return ResponseEntity.ok(updateUser);
         } else {
             return ResponseEntity.notFound().build();
         }

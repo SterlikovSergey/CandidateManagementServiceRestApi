@@ -9,7 +9,6 @@ import java.io.IOException;
 public class AvatarMapper {
     public User addAvatarDtoToUser(AddAvatarDto dto) throws IOException {
         User user = new User();
-        user.setUsername(dto.getUsername());
         user.setAvatar(dto.getAvatar().getBytes());
         return user;
     }
