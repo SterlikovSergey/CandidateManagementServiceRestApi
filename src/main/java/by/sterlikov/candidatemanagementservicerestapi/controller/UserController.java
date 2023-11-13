@@ -1,14 +1,14 @@
 package by.sterlikov.candidatemanagementservicerestapi.controller;
 
 import by.sterlikov.candidatemanagementservicerestapi.configuration.JWTTokenProvider;
-import by.sterlikov.candidatemanagementservicerestapi.dto.AvatarDto;
-import by.sterlikov.candidatemanagementservicerestapi.dto.AuthRequestDto;
-import by.sterlikov.candidatemanagementservicerestapi.dto.CvFileDto;
-import by.sterlikov.candidatemanagementservicerestapi.dto.UserDto;
+import by.sterlikov.candidatemanagementservicerestapi.dto.*;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.AvatarMapper;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.CvFileMapper;
+import by.sterlikov.candidatemanagementservicerestapi.mapper.DirectionMapper;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.UserMapper;
+import by.sterlikov.candidatemanagementservicerestapi.model.Direction;
 import by.sterlikov.candidatemanagementservicerestapi.model.User;
+import by.sterlikov.candidatemanagementservicerestapi.repository.DirectionRepository;
 import by.sterlikov.candidatemanagementservicerestapi.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,17 +29,21 @@ public class UserController {
     private final AvatarMapper avatarMapper;
     private final JWTTokenProvider tokenProvider;
     private final CvFileMapper cvFileMapper;
+    private final DirectionMapper directionMapper;
+    private final DirectionRepository directionRepository;
 
     public UserController(UserService userService,
                           UserMapper userMapper,
                           AvatarMapper avatarMapper,
                           JWTTokenProvider tokenProvider,
-                          CvFileMapper cvFileMapper) {
+                          CvFileMapper cvFileMapper, DirectionMapper directionMapper, DirectionRepository directionRepository) {
         this.userService = userService;
         this.userMapper = userMapper;
         this.avatarMapper = avatarMapper;
         this.tokenProvider = tokenProvider;
         this.cvFileMapper = cvFileMapper;
+        this.directionMapper = directionMapper;
+        this.directionRepository = directionRepository;
     }
 
     @GetMapping("/allUsers")
@@ -53,6 +57,22 @@ public class UserController {
         User userDtoToUser = userMapper.createUserDtoToUser(dto);
         User user = userService.create(userDtoToUser);
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/direction")
+    public ResponseEntity<User> updateDirection(@RequestPart("user") User user,
+                                                @RequestPart("direction") DirectionDto dto) {
+        Direction direction = directionMapper.directionDtoToDirection(dto);
+        if (getOptionalUser(user).isPresent()) {
+            User currentUser = getOptionalUser(user).get();
+            currentUser.getDirections().add(direction);
+            /* direction.getCandidates().add(user);*/
+            directionRepository.save(direction);
+            User updateUser = userService.updateUser(currentUser);
+            return ResponseEntity.ok(updateUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/avatar")
@@ -104,5 +124,6 @@ public class UserController {
         }
         return ResponseEntity.badRequest().build();
     }
+
 }
 
