@@ -6,27 +6,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "direction")
-@Getter
+@Table(name = "result")
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Direction {
+public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String description;
+    private LocalDate date;
+    private int grade;
 
-    @ManyToMany(mappedBy = "directions")
-    private Set<Test> tests = new HashSet<>();
-
-    @ManyToMany(mappedBy = "directions")
-    private Set<User> candidates = new HashSet<>();
-
+    @ManyToOne
+    @JoinColumn(name = "candidate_test_id")
+    private UserTest userTest;
 }

@@ -40,7 +40,7 @@ public class JWTTokenProvider {
         jwtSecret = Base64.getEncoder().encodeToString(jwtSecret.getBytes());
     }
 
-    public String generateToken(String username, Collection<? extends GrantedAuthority> roles){
+    public String generateToken(String username, Collection<? extends GrantedAuthority> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", getUserRoleNamesFromJWT(roles));
 
@@ -60,7 +60,7 @@ public class JWTTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUserUsernameFromJWT(String token){
+    public String getUserUsernameFromJWT(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
@@ -73,7 +73,7 @@ public class JWTTokenProvider {
     }
 
     @SneakyThrows
-    public  boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
 
@@ -84,7 +84,7 @@ public class JWTTokenProvider {
         }
     }
 
-    private List<String> getUserRoleNamesFromJWT(Collection<? extends GrantedAuthority> roles){
+    private List<String> getUserRoleNamesFromJWT(Collection<? extends GrantedAuthority> roles) {
         List<String> result = new ArrayList<>();
         roles.forEach(role -> result.add(role.toString()));
         return result;

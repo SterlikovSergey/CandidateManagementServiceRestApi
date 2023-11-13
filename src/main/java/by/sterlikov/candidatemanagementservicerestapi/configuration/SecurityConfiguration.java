@@ -1,4 +1,5 @@
 package by.sterlikov.candidatemanagementservicerestapi.configuration;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 
-
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -18,6 +18,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String ADMIN_ENDPOINT = "/api/admin/**";
     private static final String CREATE_USER_ENDPOINT = "/user";
     private static final String LOGIN_ENDPOINT = "/user/login";
+    private static final String CREATE_DIRECTION_ENDPOINT = "/direction";
 
     private static final String[] PUBLIC_URLS = {
             "/v2/api-docs",
@@ -28,7 +29,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/*.html",
             "/**/*.html",
             "/**/*.css",
-            "/**/*.js"
+            "/**/*.js",
+            "/user/allUsers"
     };
 
     @Bean
@@ -45,7 +47,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, CREATE_USER_ENDPOINT, LOGIN_ENDPOINT).permitAll()
+                .antMatchers(HttpMethod.POST, CREATE_USER_ENDPOINT,
+                        LOGIN_ENDPOINT, CREATE_DIRECTION_ENDPOINT).permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET, PUBLIC_URLS).permitAll()
                 .antMatchers("/db/**").permitAll()

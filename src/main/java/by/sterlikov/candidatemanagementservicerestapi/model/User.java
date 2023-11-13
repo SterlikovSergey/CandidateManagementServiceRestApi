@@ -31,7 +31,7 @@ public class User implements UserDetails {
     private byte[] avatar;
 
     @Lob
-    private byte[] CVFile;
+    private byte[] CvFile;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
@@ -45,8 +45,8 @@ public class User implements UserDetails {
     )
     private Set<Direction> directions = new HashSet<>();
 
-    @OneToMany(mappedBy = "ownerTest")
-    private Set<TestUser> tests = new HashSet<>();
+    @OneToMany(mappedBy = "candidate")
+    private Set<UserTest> tests = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

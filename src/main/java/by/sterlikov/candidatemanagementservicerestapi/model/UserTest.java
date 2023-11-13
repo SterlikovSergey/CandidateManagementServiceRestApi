@@ -7,31 +7,23 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "test_candidate")
+@Table(name = "candidate_test")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TestUser {
+public class UserTest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "candidate_id")
-    private User ownerTest;
+    private User candidate;
 
     @ManyToOne
     @JoinColumn(name = "test_id")
     private Test test;
-
-    private LocalDate testedAt;
-    private int grade;
-
-
-
 }

@@ -25,9 +25,14 @@ public class Test {
     private String name;
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "testOfDirections")
-    private List<Direction> testDirections = new ArrayList<>();
+    @ManyToMany()
+    @JoinTable(
+            name = "test_directions",
+            joinColumns = @JoinColumn(name = "test_id"),
+            inverseJoinColumns = @JoinColumn(name = "direction_id")
+    )
+    private Set<Direction> directions = new HashSet<>();
 
     @OneToMany(mappedBy = "test")
-    private Set<TestUser> ownerTest = new HashSet<>();
+    private Set<UserTest> candidates = new HashSet<>();
 }
