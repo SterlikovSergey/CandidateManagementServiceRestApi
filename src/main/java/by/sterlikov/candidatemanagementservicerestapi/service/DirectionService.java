@@ -7,9 +7,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DirectionService {
-    @Autowired
+    final
     DirectionRepository directionRepository;
+
+    public DirectionService(DirectionRepository directionRepository) {
+        this.directionRepository = directionRepository;
+    }
+
     public Direction create(Direction direction){
         return directionRepository.save(direction);
     }
+
+
 }

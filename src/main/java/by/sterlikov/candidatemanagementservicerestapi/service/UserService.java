@@ -4,6 +4,8 @@ import by.sterlikov.candidatemanagementservicerestapi.exception.UserNotFoundExce
 import by.sterlikov.candidatemanagementservicerestapi.model.Role;
 import by.sterlikov.candidatemanagementservicerestapi.model.User;
 import by.sterlikov.candidatemanagementservicerestapi.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,5 +48,18 @@ public class UserService implements UserDetailsService {
 
     public User updateUser(User user){
         return userRepository.save(user);
+    }
+
+
+    public Page<User> getAllCandidates(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public Page<User> getCandidatesByFirstName(String firstName, Pageable pageable) {
+        return userRepository.findByName(firstName, pageable);
+    }
+
+    public Page<User> getCandidatesByDirection(Long directionId, Pageable pageable) {
+        return userRepository.findByDirections_Id(directionId, pageable);
     }
 }

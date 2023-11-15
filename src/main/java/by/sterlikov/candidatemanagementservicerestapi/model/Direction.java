@@ -1,5 +1,6 @@
 package by.sterlikov.candidatemanagementservicerestapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +24,11 @@ public class Direction {
     private String name;
     private String description;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "directions")
     private Set<Test> tests = new HashSet<>();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "directions")
     private Set<User> candidates = new HashSet<>();
 
