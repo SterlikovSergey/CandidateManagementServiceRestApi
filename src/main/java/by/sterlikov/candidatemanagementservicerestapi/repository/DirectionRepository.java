@@ -9,4 +9,7 @@ import java.util.List;
 public interface DirectionRepository extends JpaRepository<Direction, Long> {
     @Override
     List<Direction> findAll();
+
+    @Override
+    List<Direction> findAll(Sort sort);
 }
