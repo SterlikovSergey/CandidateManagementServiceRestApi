@@ -6,6 +6,8 @@ import by.sterlikov.candidatemanagementservicerestapi.model.Direction;
 import by.sterlikov.candidatemanagementservicerestapi.model.User;
 import by.sterlikov.candidatemanagementservicerestapi.service.DirectionService;
 import by.sterlikov.candidatemanagementservicerestapi.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,18 +15,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/direction")
+@Tag(name = "Directional resource", description = "description from direction resource")
 public class DirectionController {
-    private final UserService userService;
-    final DirectionService directionService;
-    final DirectionMapper directionMapper;
 
-    public DirectionController(UserService userService, DirectionService directionService, DirectionMapper directionMapper) {
-        this.userService = userService;
-        this.directionService = directionService;
-        this.directionMapper = directionMapper;
-    }
+    private final UserService userService;
+    private final DirectionService directionService;
+    private final DirectionMapper directionMapper;
 
     @GetMapping("/{directionId}/users")
     public Page<User> getCandidatesByDirection(@PathVariable Long directionId,
@@ -36,10 +37,13 @@ public class DirectionController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Direction> addDirection(@RequestBody DirectionDto dto) {
-        Direction directionDtoToDirection = directionMapper.directionDtoToDirection(dto);
-        Direction direction = directionService.create(directionDtoToDirection);
-        return ResponseEntity.ok(direction);
+    public ResponseEntity<Direction> addDirection(@Valid @RequestBody DirectionDto dto) {
+        if (directionService.existsDirection(directionMapper.directionDtoToDirection(dto))) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            Direction direction = directionService.create(directionMapper.directionDtoToDirection(dto));
+            return ResponseEntity.ok(direction);
+        }
     }
 
     @PostMapping("/update/user/{id}")

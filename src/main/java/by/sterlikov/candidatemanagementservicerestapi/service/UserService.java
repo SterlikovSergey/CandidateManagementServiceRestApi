@@ -2,8 +2,10 @@ package by.sterlikov.candidatemanagementservicerestapi.service;
 
 import by.sterlikov.candidatemanagementservicerestapi.exception.UserNotFoundException;
 import by.sterlikov.candidatemanagementservicerestapi.model.Role;
+import by.sterlikov.candidatemanagementservicerestapi.model.Test;
 import by.sterlikov.candidatemanagementservicerestapi.model.User;
 import by.sterlikov.candidatemanagementservicerestapi.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,20 +13,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+@AllArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User create(User user) {
         user.setRoles(Set.of(Role.USER));
@@ -38,10 +35,6 @@ public class UserService implements UserDetailsService {
         return byUsername.orElseThrow(UserNotFoundException::new);
     }
 
-    public List<User> findAll() {
-       return userRepository.findAll();
-    }
-
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
@@ -52,14 +45,19 @@ public class UserService implements UserDetailsService {
 
 
     public Page<User> getAllCandidates(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        return userRepository.findAllBy(pageable);
     }
 
-    public Page<User> getCandidatesByFirstName(String firstName, Pageable pageable) {
-        return userRepository.findByName(firstName, pageable);
+    public User getCandidateByName(String name) {
+        Optional<User> byName = userRepository.findByName(name);
+        return byName.orElseThrow(UserNotFoundException::new);
     }
 
+    public List<User> getCandidatesByName(String username, Pageable pageable) {
+        return userRepository.findByName(username, pageable);
+    }
     public Page<User> getCandidatesByDirection(Long directionId, Pageable pageable) {
         return userRepository.findByDirections_Id(directionId, pageable);
     }
+
 }

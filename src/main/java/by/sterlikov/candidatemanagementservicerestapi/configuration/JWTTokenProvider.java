@@ -26,9 +26,11 @@ public class JWTTokenProvider {
     @Value("${jwt.token.expired}")
     private long jwtExpirationInMs;
 
-    @Autowired
-    @Qualifier("userService")
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+
+    public JWTTokenProvider(@Qualifier("userService") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -76,7 +78,7 @@ public class JWTTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-
+ 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
 //      throw new JWTAuthenticationException("JWT token is expired or invalid");

@@ -1,0 +1,15 @@
+package by.sterlikov.candidatemanagementservicerestapi.repository;
+
+import by.sterlikov.candidatemanagementservicerestapi.model.Test;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+@Repository
+public interface TestRepository extends JpaRepository<Test,Long> {
+    @Override
+    List<Test> findAll();
+
+    Test findAllById(Long id);
+
+}

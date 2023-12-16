@@ -1,12 +1,19 @@
 package by.sterlikov.candidatemanagementservicerestapi.controller;
 
 import by.sterlikov.candidatemanagementservicerestapi.configuration.JWTTokenProvider;
-import by.sterlikov.candidatemanagementservicerestapi.dto.*;
+import by.sterlikov.candidatemanagementservicerestapi.dto.AuthRequestDto;
+import by.sterlikov.candidatemanagementservicerestapi.dto.AvatarDto;
+import by.sterlikov.candidatemanagementservicerestapi.dto.CvFileDto;
+import by.sterlikov.candidatemanagementservicerestapi.dto.UserDto;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.AvatarMapper;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.CvFileMapper;
 import by.sterlikov.candidatemanagementservicerestapi.mapper.UserMapper;
 import by.sterlikov.candidatemanagementservicerestapi.model.User;
 import by.sterlikov.candidatemanagementservicerestapi.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +25,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
+@Tag(name = "User resource", description = "description from user resource")
 public class UserController {
 
     private final UserService userService;
@@ -29,16 +39,6 @@ public class UserController {
     private final AvatarMapper avatarMapper;
     private final JWTTokenProvider tokenProvider;
     private final CvFileMapper cvFileMapper;
-
-
-    public UserController(UserService userService, UserMapper userMapper,
-                          AvatarMapper avatarMapper, JWTTokenProvider tokenProvider, CvFileMapper cvFileMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
-        this.avatarMapper = avatarMapper;
-        this.tokenProvider = tokenProvider;
-        this.cvFileMapper = cvFileMapper;
-    }
 
     @GetMapping("/all")
     public Page<User> getAllCandidates(@RequestParam(defaultValue = "0") int page,
@@ -48,23 +48,32 @@ public class UserController {
         return userService.getAllCandidates(pageable);
     }
 
-    @GetMapping("/filtered")
-    public Page<User> getCandidatesByName(@RequestParam String name,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(required = false) String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return userService.getCandidatesByFirstName(name, pageable);
+    @GetMapping("/{name}")
+    @Operation(summary = "find by name", description = "Find User by name")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    public ResponseEntity<User> getCandidateByName(@PathVariable String name) {
+        User byName = userService.getCandidateByName(name);
+        return ResponseEntity.ok(byName);
     }
 
-    @PostMapping
+
+    @GetMapping("/getAllByUsername/{username}/{page}")
+    @Operation(summary = "create list users", description = "all users by username")
+    public ResponseEntity<List<User>> getAllCandidatesByUsername(@PathVariable String username,
+                                                                 @PathVariable Integer page,
+                                                                 @RequestParam Integer size) {
+        List<User> candidatesByName = userService.getCandidatesByName(username, PageRequest.of(page, size));
+        return ResponseEntity.ok(candidatesByName);
+    }
+
+    @PostMapping("/signup")
     public ResponseEntity<User> registration(@RequestBody UserDto dto) {
         User userDtoToUser = userMapper.createUserDtoToUser(dto);
         User user = userService.create(userDtoToUser);
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/{id}/avatar")
+    @PutMapping("/{id}/avatar")
     public ResponseEntity<User> updateAvatar(@PathVariable("id") Long id,
                                              @RequestPart("avatar") MultipartFile avatar) throws IOException {
         AvatarDto avatarDto = new AvatarDto();

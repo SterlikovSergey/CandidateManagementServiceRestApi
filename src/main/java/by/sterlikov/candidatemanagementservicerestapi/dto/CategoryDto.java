@@ -1,26 +1,19 @@
 package by.sterlikov.candidatemanagementservicerestapi.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @ToString
-public class DirectionDto {
+public class CategoryDto {
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
+    @NotEmpty(message = "Please enter name categories")
+    @NotBlank(message = "Please enter name categories")
     private String name;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    private String description;
 }

@@ -6,12 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JWTTokenProvider jwtTokenProvider;
 
@@ -19,9 +21,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String CREATE_USER_ENDPOINT = "/user";
     private static final String LOGIN_ENDPOINT = "/user/login";
     private static final String CREATE_DIRECTION_ENDPOINT = "/direction";
+    private static final String CREATE_CATEGORY_ENDPOINT = "/category";
+    private static final String CREATE_PRODUCT_ENDPOINT = "/product";
+    private static final String CREATE_STORE_ENDPOINT = "/store";
+    private static final String CREATE_ORDER_ENDPOINT = "/order";
 
     private static final String[] PUBLIC_URLS = {
+            "/**",
             "/v2/api-docs",
+            "/store/**",
+            "/product/**",
+            "/category/**",
+            "/order/**",
             "/swagger-ui/index.html",
             "/swagger-resources/**",
             "configuration/**",
@@ -30,7 +41,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/**/*.html",
             "/**/*.css",
             "/**/*.js",
-            "/user/allUsers"
+            "/user/allUsers",
+            "/direction/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     @Bean
@@ -48,11 +63,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, CREATE_USER_ENDPOINT,
-                        LOGIN_ENDPOINT, CREATE_DIRECTION_ENDPOINT).permitAll()
+                        LOGIN_ENDPOINT, CREATE_DIRECTION_ENDPOINT,CREATE_CATEGORY_ENDPOINT,CREATE_PRODUCT_ENDPOINT,
+                        CREATE_STORE_ENDPOINT,CREATE_ORDER_ENDPOINT).permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET, PUBLIC_URLS).permitAll()
                 .antMatchers("/db/**").permitAll()
                 .antMatchers("/user/**").permitAll()
+                .antMatchers("/store/**").permitAll()
+                .antMatchers("/order/**").permitAll()
+                .antMatchers("/direction/**").permitAll()
+                .antMatchers("/v3/api-docs/**").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JWTConfig(jwtTokenProvider));
